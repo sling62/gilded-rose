@@ -128,9 +128,25 @@ class GildedRose {
      * @param itemIndex index of regular item in items
      */
     private void updateRegularItemQuality(int itemIndex) {
-        //This is purely for testing
-        if(items[itemIndex].quality > 0) {
-            items[itemIndex].quality = items[itemIndex].quality -1;
+        /**
+         * If sellIn has passed, quality will degrade twice as fast (ie. quality will be decreased by 2 not 1)
+         * If not passed its sellIn will just decrease quality by usual amount (1)
+         */
+        if(items[itemIndex].sellIn < 0) {
+            //checks to see if item quality value is 1 (so it will only decrease quality by 1 not 2 so that quality is not negative)
+            if(items[itemIndex].quality == 1) {
+                items[itemIndex].quality = items[itemIndex].quality - 1;
+            }
+            else if(items[itemIndex].quality >=2) {
+                //if item quality value is 2 or greater will deduct the usual quality amount (2) for a regular item that passed its sell by date
+                items[itemIndex].quality = items[itemIndex].quality - 2;
+            }
+        }
+        else {
+        //checks to see if item quality value is greater than 0 (so that when decreased by 1 is not negative)
+          if(items[itemIndex].quality > 0) {
+              items[itemIndex].quality = items[itemIndex].quality - 1;
+          }
         }
     }
 }

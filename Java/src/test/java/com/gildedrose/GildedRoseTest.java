@@ -205,29 +205,44 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenARegularItemIsProvidedAndQualityIsGreaterThanZeroButLessThanFifty_ItShouldUpdateQualityAndSellInFields() {
-        items = new Item[] { new Item("+5 Dexterity Vest", 10, 20) };
+    public void whenARegularItemWithSellInLessThanZeroIsProvidedAndQualityIsGreaterThanOrEqualToOne_ItShouldUpdateQualityUntilZeroThenStop() {
+        items = new Item[] { new Item("+5 Dexterity Vest", -1, 3) };
         app = new GildedRose(items);
+
+        //First update
         app.updateQuality();
         assertEquals("+5 Dexterity Vest", items[0].name);
-        assertEquals(19, items[0].quality);
-        assertEquals(9, items[0].sellIn);
+        assertEquals(1, items[0].quality);
+        assertEquals(-2, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        assertEquals(0, items[0].quality);
+        assertEquals(-3, items[0].sellIn);
+
+        //Third update
+        app.updateQuality();
+        assertEquals(0, items[0].quality);
+        assertEquals(-4, items[0].sellIn);
     }
 
     @Test
-    public void whenARegularItemIsProvidedAndQualityIsZero_ItShouldNotUpdateQualityButUpdateSellInFields() {
-        items = new Item[] { new Item("+5 Dexterity Vest", 10, 0) };
+    public void whenARegularItemWithSellInGreaterThanOrEqualToZeroIsProvidedAndQualityIsGreaterThanZero_ItShouldUpdateQualityUntilZeroThenStop() {
+        items = new Item[] { new Item("+5 Dexterity Vest", 5, 1) };
         app = new GildedRose(items);
 
+        //First update
         app.updateQuality();
+        //Items sellIn date is expected to decrease and quality will decrease by 1
         assertEquals("+5 Dexterity Vest", items[0].name);
         assertEquals(0, items[0].quality);
-        assertEquals(9, items[0].sellIn);
+        assertEquals(4, items[0].sellIn);
 
+        //Second update
         app.updateQuality();
+        //Items sellIn date is expected to decrease and quality will stay the same
         assertEquals("+5 Dexterity Vest", items[0].name);
         assertEquals(0, items[0].quality);
-        assertEquals(8, items[0].sellIn);
+        assertEquals(3, items[0].sellIn);
     }
-
 }
