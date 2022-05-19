@@ -1,8 +1,12 @@
 package com.gildedrose;
 
 class GildedRose {
-    Item[] items;
+    //Minimum quality value a item can have
+    private static final int MINIMUM_QUALITY_VALUE = 0;
+    //Maximum quality value a item can have
+    private static final int MAXIMUM_QUALITY_VALUE = 50;
 
+    Item[] items;
     public GildedRose(Item[] items) {
         this.items = items;
     }
@@ -21,7 +25,7 @@ class GildedRose {
             // If it is, skips update of quality and sell by date
             if(items[i].name != "Sulfuras, Hand of Ragnaros") {
                 //checks to make sure initial quality of item is not > 50, if it is throws exception
-                if (items[i].quality > 50) {
+                if (items[i].quality > MAXIMUM_QUALITY_VALUE) {
                     throw new IllegalArgumentException("Item quality cannot be greater than 50");
                 }
 
@@ -63,7 +67,7 @@ class GildedRose {
         if (items[itemIndex].name.isBlank() || items[itemIndex].name.isEmpty()) {
             throw new IllegalArgumentException("Item name cannot be empty");
         }
-        if(items[itemIndex].quality <0) {
+        if(items[itemIndex].quality <MINIMUM_QUALITY_VALUE) {
             throw new IllegalArgumentException("Item quality cannot be less than 0");
         }
     }
@@ -74,7 +78,7 @@ class GildedRose {
      */
     private void updateAgedBrieItemQuality(int itemIndex) {
         //Only increases quality of Aged Brie if the quality is not already at 50
-        if(items[itemIndex].quality != 50) {
+        if(items[itemIndex].quality != MAXIMUM_QUALITY_VALUE) {
             items[itemIndex].quality = items[itemIndex].quality + 1;
         }
     }
@@ -85,7 +89,7 @@ class GildedRose {
      */
     private void updateBackstagePassesItemQuality(int itemIndex) {
         //Calculates the difference between the max quality an item can have (50), and the item quality, to see how much quality that can be added to not exceed 50
-        int qualityDifference = 50 - items[itemIndex].quality;;
+        int qualityDifference = MAXIMUM_QUALITY_VALUE - items[itemIndex].quality;;
 
         //Checks to see if sellIn date is between 6-10 days or 0-5 days
         if(items[itemIndex].sellIn > 5 && items[itemIndex].sellIn <= 10) {
@@ -114,26 +118,46 @@ class GildedRose {
 
     /**
      * Update the quality of a conjured item
+     * Conjured items degrade in quality twice as fast as normal/regular items hence,
+     * If a conjured item has passed its sellIn date will decrease in quality twice as fast as a regular item which had passed its sellIn date (ie. conjured items will decrease by 4)
+     * If a conjured item has not passed its sellIn then it will just decrease twice as fast as a regular item that has not passed its sellIn date (ie. conjured items will decrease by 2)
      * @param itemIndex index of conjured item in items
      */
     private void updateConjuredItemQuality(int itemIndex) {
-        //This is purely for testing
-        if(items[itemIndex].quality > 0) {
-            items[itemIndex].quality = items[itemIndex].quality -1;
+        //Checks to see if item has passed its sellIn date
+        if(items[itemIndex].sellIn < 0) {
+            //if so, checks to see if item quality value is less than 4 (if so will decrease quality value to 0, so it is not negative)
+            if((items[itemIndex].quality - 4) < MINIMUM_QUALITY_VALUE) {
+                items[itemIndex].quality = MINIMUM_QUALITY_VALUE;
+            }
+            else {
+                //if item quality value is 4 or greater will deduct the usual quality amount (4) for a conjured item that passed its sell by date
+                items[itemIndex].quality = items[itemIndex].quality - 4;
+            }
+        }
+        else {
+            //if it hasn't passed its sellIn date, checks to see if item quality value is greater than 2 (so that when decreased by 2 is not negative)
+            if((items[itemIndex].quality - 2) < MINIMUM_QUALITY_VALUE) {
+                //if the quality value is not greater than 2 (ie. if quality is 0 or 1) then sets quality to 0
+                items[itemIndex].quality = MINIMUM_QUALITY_VALUE;
+            }
+            else {
+                // else decreases quality by 2
+                items[itemIndex].quality = items[itemIndex].quality - 2;
+            }
         }
     }
 
     /**
      * Update the quality of a regular item
+     * If sellIn has passed, quality will degrade twice as fast (ie. quality will be decreased by 2 not 1)
+     * If not passed its sellIn will just decrease quality by usual amount (ie. 1)
      * @param itemIndex index of regular item in items
      */
     private void updateRegularItemQuality(int itemIndex) {
-        /**
-         * If sellIn has passed, quality will degrade twice as fast (ie. quality will be decreased by 2 not 1)
-         * If not passed its sellIn will just decrease quality by usual amount (1)
-         */
+        //Checks to see if item has passed its sellIn date
         if(items[itemIndex].sellIn < 0) {
-            //checks to see if item quality value is 1 (so it will only decrease quality by 1 not 2 so that quality is not negative)
+            //if it has, checks to see if item quality value is 1 (so it will only decrease quality by 1 not 2 so that quality is not negative)
             if(items[itemIndex].quality == 1) {
                 items[itemIndex].quality = items[itemIndex].quality - 1;
             }
@@ -143,8 +167,8 @@ class GildedRose {
             }
         }
         else {
-        //checks to see if item quality value is greater than 0 (so that when decreased by 1 is not negative)
-          if(items[itemIndex].quality > 0) {
+        //If it hasn't passed its sellIn date, it checks to see if item quality value is greater than 0 (so that when decreased by 1 is not negative)
+          if(items[itemIndex].quality > MINIMUM_QUALITY_VALUE) {
               items[itemIndex].quality = items[itemIndex].quality - 1;
           }
         }

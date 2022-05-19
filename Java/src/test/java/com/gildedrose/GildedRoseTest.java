@@ -5,12 +5,18 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 public class GildedRoseTest {
+
+    private final String AGED_BRIE_ITEM = "Aged Brie";
+    private final String REGULAR_ITEM = "+5 Dexterity Vest";
+    private final String SULFURAS_ITEM = "Sulfuras, Hand of Ragnaros";
+    private final String BACKSTAGE_PASSES_ITEM = "Backstage passes to a TAFKAL80ETC concert";
+    private final String CONJURED_ITEM = "Conjured Mana Cake";
     private Item[] items;
     private GildedRose app;
 
     @Test(expected = NullPointerException.class)
     public void givenANullItemNameIsProvided_whenUpdateQualityIsCalled_ItMustThrowANullPointerException() {
-        items = new Item[] { new Item("Aged Brie", 10, 16), new Item(null, 0, 0) };
+        items = new Item[] { new Item(AGED_BRIE_ITEM, 10, 16), new Item(null, 0, 0) };
         app = new GildedRose(items);
         app.updateQuality();
     }
@@ -24,28 +30,28 @@ public class GildedRoseTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void givenANegativeQualityIsProvided_whenUpdateQualityIsCalled_ItMustThrowAIllegalArgumentException() {
-        items = new Item[] { new Item("+5 Dexterity Vest", 0, -1) };
+        items = new Item[] { new Item(REGULAR_ITEM, 0, -1) };
         app = new GildedRose(items);
         app.updateQuality();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void givenARegularItemWithQualityHigherThanFiftyIsProvided_whenUpdateQualityIsCalled_ItMustThrowAIllegalArgumentException() {
-        items = new Item[] { new Item("+5 Dexterity Vest", 0, 51) };
+        items = new Item[] { new Item(REGULAR_ITEM, 0, 51) };
         app = new GildedRose(items);
         app.updateQuality();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void givenASulfurasItemWithQualityNotEightyIsProvided_whenUpdateQualityIsCalled_ItMustThrowAIllegalArgumentException() {
-        items = new Item[] { new Item("Sulfuras, Hand of Ragnaros", 0, 50) };
+        items = new Item[] { new Item(SULFURAS_ITEM, 0, 50) };
         app = new GildedRose(items);
         app.updateQuality();
     }
 
     @Test
     public void whenASulfurasItemWithQualityofEightyIsProvided_ItShouldNotUpdateQualityOrSellInFields() {
-        items = new Item[] { new Item("Sulfuras, Hand of Ragnaros", 20, 80) };
+        items = new Item[] { new Item(SULFURAS_ITEM, 20, 80) };
         app = new GildedRose(items);
         app.updateQuality();
         assertEquals(80, items[0].quality);
@@ -54,30 +60,30 @@ public class GildedRoseTest {
 
     @Test
     public void whenAgedBrieIsProvidedAndQualityIsLessThanFifty_ItShouldIncreaseQualityAndDecreaseSellInFieldsEndOfEachDay() {
-        items = new Item[] { new Item("Aged Brie", 6, 4) };
+        items = new Item[] { new Item(AGED_BRIE_ITEM, 6, 4) };
         app = new GildedRose(items);
 
         //first update of quality and sellIn
         app.updateQuality();
-        assertEquals("Aged Brie", items[0].name);
+        assertEquals(AGED_BRIE_ITEM, items[0].name);
         assertEquals(5, items[0].quality);
         assertEquals(5, items[0].sellIn);
 
         //second update of quality and sellIn
         app.updateQuality();
-        assertEquals("Aged Brie", items[0].name);
+        assertEquals(AGED_BRIE_ITEM, items[0].name);
         assertEquals(6, items[0].quality);
         assertEquals(4, items[0].sellIn);
     }
 
     @Test
     public void whenAgedBrieIsProvidedAndQualityIsFifty_ItShouldNotIncreaseQualityAtEndOfEachDay() {
-        items = new Item[] { new Item("Aged Brie", -10, 50) };
+        items = new Item[] { new Item(AGED_BRIE_ITEM, -10, 50) };
         app = new GildedRose(items);
 
         //First update
         app.updateQuality();
-        assertEquals("Aged Brie", items[0].name);
+        assertEquals(AGED_BRIE_ITEM, items[0].name);
         assertEquals(50, items[0].quality);
         assertEquals(-11, items[0].sellIn);
 
@@ -87,29 +93,9 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenABackstagePassWithSellInBetweenZeroAndFiveIsProvidedAndQualityIsGreaterThanFortySevenButLessThanFifty_ItShouldUpdateQualityToBeFiftyThenStop() {
-        items = new Item[] {new Item("Backstage passes to a TAFKAL80ETC concert", 2, 48)};
-        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
-
-        app = new GildedRose(items);
-        //First update
-        app.updateQuality();
-        //Item sellIn date is expected to decrease and quality will increase by 2 to 50
-        assertEquals(50, items[0].quality);
-        assertEquals(1, items[0].sellIn);
-
-        //Second update
-        app.updateQuality();
-        //Item sellIn date is expected to decrease and quality will stay at 50
-        assertEquals(50, items[0].quality);
-        assertEquals(0, items[0].sellIn);
-
-    }
-
-    @Test
-    public void whenABackstagePassWithSellInBetweenZeroAndFiveIsProvidedAndQualityIsLessThanFortyEight_ItShouldUpdateQualityToBeFiftyThenStop() {
-        items = new Item[] {new Item("Backstage passes to a TAFKAL80ETC concert", 5, 45)};
-        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+    public void whenABackstagePassWithSellInBetweenZeroAndFiveIsProvided_ItShouldIncreaseQualityByThreeUntilValueIsFifty() {
+        items = new Item[] {new Item(BACKSTAGE_PASSES_ITEM, 5, 45)};
+        assertEquals(BACKSTAGE_PASSES_ITEM, items[0].name);
 
         app = new GildedRose(items);
         //First update
@@ -132,32 +118,11 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenABackstagePassWithSellInBetweenSixAndTenIsProvidedAndQualityIsGreaterThanFourtyEightButLessThanFifty_ItShouldUpdateQualityToBeFiftyThenStop() {
+    public void whenABackstagePassWithSellInBetweenSixAndTenIsProvided_ItShouldIncreaseQualityByTwoUntilFifty() {
         items = new Item[] {
-                new Item("Backstage passes to a TAFKAL80ETC concert", 3, 49),
+                new Item(BACKSTAGE_PASSES_ITEM, 10, 47),
         };
-        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
-
-        app = new GildedRose(items);
-        //First update
-        app.updateQuality();
-        //Item sellIn date is expected to decrease and quality will increase by 1 to 50
-        assertEquals(50, items[0].quality);
-        assertEquals(2, items[0].sellIn);
-
-        //Second update
-        app.updateQuality();
-        //Item sellIn date is expected to decrease and quality will stay at 50
-        assertEquals(50, items[0].quality);
-        assertEquals(1, items[0].sellIn);
-    }
-
-    @Test
-    public void whenABackstagePassWithSellInBetweenSixAndTenIsProvidedAndQualityIsLessThanFourtyNine_ItShouldUpdateQualityToBeFiftyThenStop() {
-        items = new Item[] {
-                new Item("Backstage passes to a TAFKAL80ETC concert", 10, 47),
-        };
-        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+        assertEquals(BACKSTAGE_PASSES_ITEM, items[0].name);
 
         app = new GildedRose(items);
         //First update
@@ -180,9 +145,9 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenABackstagePassWithSellInLessThanZeroOrGreaterThanTenIsProvidedAndQualityIsLessThanFifty_ItShouldNotUpdateQuality() {
-        items = new Item[]{new Item("Backstage passes to a TAFKAL80ETC concert", -1, 48), new Item("Backstage passes to a TAFKAL80ETC concert", 12, 30)};
-        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+    public void whenABackstagePassWithSellInLessThanZeroOrGreaterThanTenIsProvided_ItShouldNotUpdateQuality() {
+        items = new Item[]{new Item(BACKSTAGE_PASSES_ITEM, -1, 48), new Item(BACKSTAGE_PASSES_ITEM, 12, 30)};
+        assertEquals(BACKSTAGE_PASSES_ITEM, items[0].name);
 
         app = new GildedRose(items);
 
@@ -195,23 +160,63 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenAConjuredItemIsProvidedAndQualityIsGreaterThanZeroButLessThanFifty_ItShouldUpdateQualityAndSellInFields() {
-        items = new Item[] { new Item("Conjured Mana Cake", 3, 6) };
-        app = new GildedRose(items);
-        app.updateQuality();
-        assertEquals("Conjured Mana Cake", items[0].name);
-        assertEquals(5, items[0].quality);
-        assertEquals(2, items[0].sellIn);
-    }
-
-    @Test
-    public void whenARegularItemWithSellInLessThanZeroIsProvidedAndQualityIsGreaterThanOrEqualToOne_ItShouldUpdateQualityUntilZeroThenStop() {
-        items = new Item[] { new Item("+5 Dexterity Vest", -1, 3) };
+    public void whenAConjuredItemWithSellInLessThanZeroIsProvidedAndQualityIsGreaterThanZero_ItShouldDecreaseQualityByFourUntilZero() {
+        items = new Item[] { new Item(CONJURED_ITEM, -1, 6) };
         app = new GildedRose(items);
 
         //First update
         app.updateQuality();
-        assertEquals("+5 Dexterity Vest", items[0].name);
+        assertEquals(CONJURED_ITEM, items[0].name);
+        //Item sellIn date is expected to decrease and quality will decrease by 4
+        assertEquals(2, items[0].quality);
+        assertEquals(-2, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will decrease to 0
+        assertEquals(0, items[0].quality);
+        assertEquals(-3, items[0].sellIn);
+
+        //Third update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will stay the same
+        assertEquals(0, items[0].quality);
+        assertEquals(-4, items[0].sellIn);
+    }
+
+    @Test
+    public void whenAConjuredItemWithSellInGreaterThanOrEqualToZeroIsProvided_ItShouldDecreaseQualityByTwoUntilZero() {
+        items = new Item[] { new Item(CONJURED_ITEM, 4, 3) };
+        app = new GildedRose(items);
+
+        //First update
+        app.updateQuality();
+        assertEquals(CONJURED_ITEM, items[0].name);
+        //Item sellIn date is expected to decrease and quality will decrease by 2
+        assertEquals(1, items[0].quality);
+        assertEquals(3, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will decrease to 0
+        assertEquals(0, items[0].quality);
+        assertEquals(2, items[0].sellIn);
+
+        //Third update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will stay the same
+        assertEquals(0, items[0].quality);
+        assertEquals(1, items[0].sellIn);
+    }
+
+    @Test
+    public void whenARegularItemWithSellInLessThanZeroIsProvided_ItShouldDecreaseQualityByTwoUntilZero() {
+        items = new Item[] { new Item(REGULAR_ITEM, -1, 3) };
+        app = new GildedRose(items);
+
+        //First update
+        app.updateQuality();
+        assertEquals(REGULAR_ITEM, items[0].name);
         assertEquals(1, items[0].quality);
         assertEquals(-2, items[0].sellIn);
 
@@ -227,21 +232,20 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenARegularItemWithSellInGreaterThanOrEqualToZeroIsProvidedAndQualityIsGreaterThanZero_ItShouldUpdateQualityUntilZeroThenStop() {
-        items = new Item[] { new Item("+5 Dexterity Vest", 5, 1) };
+    public void whenARegularItemWithSellInGreaterThanOrEqualToZeroIsProvided_ItShouldDecreaseQualityByOneUntilZero() {
+        items = new Item[] { new Item(REGULAR_ITEM, 5, 1) };
         app = new GildedRose(items);
 
         //First update
         app.updateQuality();
         //Items sellIn date is expected to decrease and quality will decrease by 1
-        assertEquals("+5 Dexterity Vest", items[0].name);
+        assertEquals(REGULAR_ITEM, items[0].name);
         assertEquals(0, items[0].quality);
         assertEquals(4, items[0].sellIn);
 
         //Second update
         app.updateQuality();
         //Items sellIn date is expected to decrease and quality will stay the same
-        assertEquals("+5 Dexterity Vest", items[0].name);
         assertEquals(0, items[0].quality);
         assertEquals(3, items[0].sellIn);
     }
