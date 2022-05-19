@@ -84,9 +84,31 @@ class GildedRose {
      * @param itemIndex index of backstage pass in items
      */
     private void updateBackstagePassesItemQuality(int itemIndex) {
-        //This is purely for testing
-        if(items[itemIndex].quality > 0) {
-            items[itemIndex].quality = items[itemIndex].quality -1;
+        //Calculates the difference between the max quality an item can have (50), and the item quality, to see how much quality that can be added to not exceed 50
+        int qualityDifference = 50 - items[itemIndex].quality;;
+
+        //Checks to see if sellIn date is between 6-10 days or 0-5 days
+        if(items[itemIndex].sellIn > 5 && items[itemIndex].sellIn <= 10) {
+            //if it is between 6-10 days, checks the quality of item to see if its 49 or 50, to make sure it doesn't exceed max quality when increased by 2
+            if(qualityDifference < 2) {
+                //if quality is 49 or 50 updates quality by difference (ie. 0 or 1) to reach max quality
+                items[itemIndex].quality = items[itemIndex].quality + qualityDifference;
+            }
+            else {
+                //else if 48 or less, increases quality by 2
+                items[itemIndex].quality = items[itemIndex].quality + 2;
+            }
+        }
+        else if(items[itemIndex].sellIn >= 0 && items[itemIndex].sellIn <= 5) {
+            //if it is between 0-5 days, checks the quality of item to see if its 48, 49 or 50, to make sure it doesn't exceed max quality when increased by 3
+            if(qualityDifference < 3) {
+                //if quality is 48, 49 or 50 updates quality by difference (ie. 0, 1 or 2) to reach max quality
+                items[itemIndex].quality = items[itemIndex].quality + qualityDifference;
+            }
+            else {
+                //else if 47 or less, increases quality by 3
+                items[itemIndex].quality = items[itemIndex].quality + 3;
+            }
         }
     }
 

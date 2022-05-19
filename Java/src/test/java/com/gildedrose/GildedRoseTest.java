@@ -87,13 +87,111 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenABackstagePassIsProvidedAndQualityIsGreaterThanZeroButLessThanFifty_ItShouldUpdateQualityAndSellInFields() {
-        items = new Item[] { new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20) };
-        app = new GildedRose(items);
-        app.updateQuality();
+    public void whenABackstagePassWithSellInBetweenZeroAndFiveIsProvidedAndQualityIsGreaterThanFortySevenButLessThanFifty_ItShouldUpdateQualityToBeFiftyThenStop() {
+        items = new Item[] {new Item("Backstage passes to a TAFKAL80ETC concert", 2, 48)};
         assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
-        assertEquals(19, items[0].quality);
-        assertEquals(14, items[0].sellIn);
+
+        app = new GildedRose(items);
+        //First update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will increase by 2 to 50
+        assertEquals(50, items[0].quality);
+        assertEquals(1, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will stay at 50
+        assertEquals(50, items[0].quality);
+        assertEquals(0, items[0].sellIn);
+
+    }
+
+    @Test
+    public void whenABackstagePassWithSellInBetweenZeroAndFiveIsProvidedAndQualityIsLessThanFortyEight_ItShouldUpdateQualityToBeFiftyThenStop() {
+        items = new Item[] {new Item("Backstage passes to a TAFKAL80ETC concert", 5, 45)};
+        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+
+        app = new GildedRose(items);
+        //First update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will increase by 3
+        assertEquals(48, items[0].quality);
+        assertEquals(4, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will increase by 2 to 50
+        assertEquals(50, items[0].quality);
+        assertEquals(3, items[0].sellIn);
+
+        //Third update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will stay at 50
+        assertEquals(50, items[0].quality);
+        assertEquals(2, items[0].sellIn);
+    }
+
+    @Test
+    public void whenABackstagePassWithSellInBetweenSixAndTenIsProvidedAndQualityIsGreaterThanFourtyEightButLessThanFifty_ItShouldUpdateQualityToBeFiftyThenStop() {
+        items = new Item[] {
+                new Item("Backstage passes to a TAFKAL80ETC concert", 3, 49),
+        };
+        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+
+        app = new GildedRose(items);
+        //First update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will increase by 1 to 50
+        assertEquals(50, items[0].quality);
+        assertEquals(2, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will stay at 50
+        assertEquals(50, items[0].quality);
+        assertEquals(1, items[0].sellIn);
+    }
+
+    @Test
+    public void whenABackstagePassWithSellInBetweenSixAndTenIsProvidedAndQualityIsLessThanFourtyNine_ItShouldUpdateQualityToBeFiftyThenStop() {
+        items = new Item[] {
+                new Item("Backstage passes to a TAFKAL80ETC concert", 10, 47),
+        };
+        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+
+        app = new GildedRose(items);
+        //First update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will increase by 2 to 49
+        assertEquals(49, items[0].quality);
+        assertEquals(9, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will increase by 1 to 50
+        assertEquals(50, items[0].quality);
+        assertEquals(8, items[0].sellIn);
+
+        //Third update
+        app.updateQuality();
+        //Item sellIn date is expected to decrease and quality will stay at 50
+        assertEquals(50, items[0].quality);
+        assertEquals(7, items[0].sellIn);
+    }
+
+    @Test
+    public void whenABackstagePassWithSellInLessThanZeroOrGreaterThanTenIsProvidedAndQualityIsLessThanFifty_ItShouldNotUpdateQuality() {
+        items = new Item[]{new Item("Backstage passes to a TAFKAL80ETC concert", -1, 48), new Item("Backstage passes to a TAFKAL80ETC concert", 12, 30)};
+        assertEquals("Backstage passes to a TAFKAL80ETC concert", items[0].name);
+
+        app = new GildedRose(items);
+
+        app.updateQuality();
+        //Items sellIn date is expected to decrease and quality will stay the same
+        assertEquals(48, items[0].quality);
+        assertEquals(-2, items[0].sellIn);
+        assertEquals(30, items[1].quality);
+        assertEquals(11, items[1].sellIn);
     }
 
     @Test
