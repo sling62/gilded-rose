@@ -2,9 +2,9 @@ package com.gildedrose;
 
 class GildedRose {
     //Minimum quality value a item can have
-    private static final int MINIMUM_QUALITY_VALUE = 0;
+    private final int MINIMUM_QUALITY_VALUE = 0;
     //Maximum quality value a item can have
-    private static final int MAXIMUM_QUALITY_VALUE = 50;
+    private final int MAXIMUM_QUALITY_VALUE = 50;
 
     Item[] items;
     public GildedRose(Item[] items) {
