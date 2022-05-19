@@ -73,9 +73,9 @@ class GildedRose {
      * @param itemIndex index of aged brie in items
      */
     private void updateAgedBrieItemQuality(int itemIndex) {
-        //This is purely for testing
-        if(items[itemIndex].quality > 0) {
-            items[itemIndex].quality = items[itemIndex].quality -1;
+        //Only increases quality of Aged Brie if the quality is not already at 50
+        if(items[itemIndex].quality != 50) {
+            items[itemIndex].quality = items[itemIndex].quality + 1;
         }
     }
 

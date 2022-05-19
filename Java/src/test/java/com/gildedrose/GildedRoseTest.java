@@ -53,13 +53,37 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void whenAgedBrieIsProvidedAndQualityIsGreaterThanZeroButLessThanFifty_ItShouldUpdateQualityAndSellInFields() {
-        items = new Item[] { new Item("Aged Brie", 4, 2) };
+    public void whenAgedBrieIsProvidedAndQualityIsLessThanFifty_ItShouldIncreaseQualityAndDecreaseSellInFieldsEndOfEachDay() {
+        items = new Item[] { new Item("Aged Brie", 6, 4) };
         app = new GildedRose(items);
+
+        //first update of quality and sellIn
         app.updateQuality();
         assertEquals("Aged Brie", items[0].name);
-        assertEquals(1, items[0].quality);
-        assertEquals(3, items[0].sellIn);
+        assertEquals(5, items[0].quality);
+        assertEquals(5, items[0].sellIn);
+
+        //second update of quality and sellIn
+        app.updateQuality();
+        assertEquals("Aged Brie", items[0].name);
+        assertEquals(6, items[0].quality);
+        assertEquals(4, items[0].sellIn);
+    }
+
+    @Test
+    public void whenAgedBrieIsProvidedAndQualityIsFifty_ItShouldNotIncreaseQualityAtEndOfEachDay() {
+        items = new Item[] { new Item("Aged Brie", -10, 50) };
+        app = new GildedRose(items);
+
+        //First update
+        app.updateQuality();
+        assertEquals("Aged Brie", items[0].name);
+        assertEquals(50, items[0].quality);
+        assertEquals(-11, items[0].sellIn);
+
+        //Second update
+        app.updateQuality();
+        assertEquals(50, items[0].quality);
     }
 
     @Test
